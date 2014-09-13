@@ -1,0 +1,9 @@
+gen
+bin
+.settings
+.project
+.classpath
+.factorypath
+.apt_generated/com/example/basetask/ui/UserListFragment_.java
+.apt_generated/com/example/basetask/MainActivity_.java
+.apt_generated/com/example/basetask/BusProvider_.java
