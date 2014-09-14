@@ -21,8 +21,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.activeandroid.content.ContentProvider;
 import com.example.basetask.BusProvider_;
 import com.example.basetask.R;
-import com.example.basetask.UserList;
 import com.example.basetask.adapters.SectionedListAdapter;
+import com.example.basetask.adapters.UserList;
 import com.example.basetask.model.GitHubUser;
 import com.example.basetask.service.LoadUsersEvent;
 import com.example.basetask.service.TaskEvent;
@@ -31,7 +31,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 public class IndexableUserListFragment extends ListFragment implements
-		OnItemClickListener 
+		OnItemClickListener
 {
 
 	IndexableListView list;
@@ -46,8 +46,8 @@ public class IndexableUserListFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		 init();
-		//initCursorAdapter();
+		init();
+		// initCursorAdapter();
 	}
 
 	void init()
@@ -58,9 +58,9 @@ public class IndexableUserListFragment extends ListFragment implements
 		list.setFastScrollEnabled(true);
 		list.setOnItemClickListener(this);
 
-		getBus().register(this);
-
-		getBus().post(new TaskEvent(TaskEvent.RELOAD));
+		// getBus().register(this);
+		//
+		// getBus().post(new TaskEvent(TaskEvent.RELOAD, getLoaderManager()));
 	}
 
 	void initCursorAdapter()
@@ -111,15 +111,15 @@ public class IndexableUserListFragment extends ListFragment implements
 		return rootView;
 	}
 
-	// @Override
-	// public void onResume() {
-	// super.onResume();
-	//
-	// getBus().register(this);
-	// // getBus().post(new LoadUsersEvent());
-	//
-	// getBus().post(new TaskEvent(TaskEvent.RELOAD));
-	// }
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		getBus().register(this);
+
+		getBus().post(new TaskEvent(TaskEvent.RELOAD, getLoaderManager()));
+	}
 
 	private Bus getBus()
 	{

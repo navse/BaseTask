@@ -1,18 +1,19 @@
 package com.example.basetask.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 
-import android.database.Cursor;
-
-import com.activeandroid.ActiveAndroid;
+import com.activeandroid.loaders.ModelLoader;
 import com.activeandroid.query.Select;
-import com.example.basetask.ApiErrorEvent;
 import com.example.basetask.GitHubApi;
+import com.example.basetask.events.ApiErrorEvent;
 import com.example.basetask.events.ToastEvent;
 import com.example.basetask.model.GitHubUser;
 import com.squareup.otto.Bus;
@@ -22,13 +23,18 @@ public class GitHubService
 {
 	private GitHubApi mApi;
 	private Bus mBus;
+	private Context mContext;
+	private DbUserLoader mLoader;
 
 	static boolean LOAD_FROM_DB = true;
+	static int PAGE_SIZE = 100;
+	static int LOADER_ID = 0;
 
-	public GitHubService(GitHubApi api, Bus bus)
+	public GitHubService(GitHubApi aApi, Bus aBus, Context aContext)
 	{
-		mApi = api;
-		mBus = bus;
+		mApi = aApi;
+		mBus = aBus;
+		mContext = aContext;
 	}
 
 	@Subscribe
@@ -39,90 +45,22 @@ public class GitHubService
 			return;
 		}
 
-		if (GitHubService.LOAD_FROM_DB)
+		if (GitHubService.LOAD_FROM_DB
+				&& new Select().from(GitHubUser.class).count() > 0)
 		{
-			loadFromDb();
-			// loadFromdbCursor();
-			// loadPaging(0);
+			loadFromDb(event.getmLoaderManager(), 0);
 		} else
 		{
 			loadFromServer(1);
 		}
 	}
 
-	void loadPaging(int offset)
+	void loadFromDb(LoaderManager aLoaderManager, int aOffset)
 	{
-		if (offset == 0 && new Select().from(GitHubUser.class).count() == 0)
-		{
-			loadFromServer(1);
-		} else
-		{
-
-			List<GitHubUser> list = new Select().from(GitHubUser.class)
-					.orderBy("login COLLATE NOCASE ASC").limit(100)
-					.offset(offset).execute();
-			mBus.post(new LoadUsersEvent(list));
-			if (list != null || list.size() == 100)
-			{
-				loadPaging(100);
-			}
-		}
-	}
-
-	void loadFromDb()
-	{
-		if ( new Select().from(GitHubUser.class).count() == 0)
-		{
-			loadFromServer(1);
-		} else
-		{
-
-			List<GitHubUser> list = new Select().from(GitHubUser.class)
-					.orderBy("login COLLATE NOCASE ASC").execute();
-
-			mBus.post(new LoadUsersEvent(list));
-		}
-	}
-
-	void loadFromdbCursor()
-	{
-		String query = new Select().from(GitHubUser.class)
-				.orderBy("login COLLATE NOCASE ASC").toSql();
-
-		Cursor cursor = ActiveAndroid.getDatabase().rawQuery(query, null);
-
-		if (cursor.moveToFirst())
-		{
-			loadDbPage(cursor);
-		} else
-		{
-			loadFromServer(1);
-			cursor.close();
-		}
-	}
-
-	void loadDbPage(Cursor cursor)
-	{
-		List<GitHubUser> list = new ArrayList<GitHubUser>(20);
-		int counter = 20;
-		boolean hasMore = true;
-		while (counter > 0 && hasMore)
-		{
-			GitHubUser user = new GitHubUser();
-			user.loadFromCursor(cursor);
-			list.add(user);
-			hasMore = cursor.moveToNext();
-			counter--;
-		}
-
-		mBus.post(new LoadUsersEvent(list));
-		if (hasMore)
-		{
-			loadDbPage(cursor);
-		} else
-		{
-			cursor.close();
-		}
+		mLoader = new DbUserLoader(aLoaderManager);
+		Bundle bundle = new Bundle();
+		bundle.putInt("offset", aOffset);
+		aLoaderManager.initLoader(LOADER_ID, bundle, mLoader);
 	}
 
 	void loadFromServer(final int id)
@@ -149,5 +87,46 @@ public class GitHubService
 				}
 			}
 		});
+	}
+
+	public class DbUserLoader implements
+			LoaderManager.LoaderCallbacks<List<GitHubUser>>
+	{
+		LoaderManager mLoaderManager;
+		int mOffset = 0;
+
+		public DbUserLoader(LoaderManager aLoaderManager)
+		{
+			mLoaderManager = aLoaderManager;
+		}
+
+		@Override
+		public Loader<List<GitHubUser>> onCreateLoader(int id, Bundle args)
+		{
+			mOffset = args.getInt("offset");
+			return new ModelLoader<GitHubUser>(mContext, GitHubUser.class,
+					new Select().from(GitHubUser.class)
+							.orderBy("login COLLATE NOCASE ASC")
+							.limit(PAGE_SIZE).offset(mOffset), true);
+		}
+
+		@Override
+		public void onLoadFinished(Loader<List<GitHubUser>> loader,
+				List<GitHubUser> data)
+		{
+			mBus.post(new LoadUsersEvent(data, true));
+
+			mLoaderManager.destroyLoader(LOADER_ID);
+			if (data.size() == 100)
+			{
+				loadFromDb(mLoaderManager, mOffset + PAGE_SIZE);
+			}
+		}
+
+		@Override
+		public void onLoaderReset(Loader<List<GitHubUser>> loader)
+		{
+
+		}
 	}
 }

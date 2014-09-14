@@ -4,20 +4,41 @@ import java.util.List;
 
 import com.example.basetask.model.GitHubUser;
 
-public class LoadUsersEvent {
+public class LoadUsersEvent
+{
 
-	private List<GitHubUser> list;
+	private List<GitHubUser> mList;
+	private boolean mIsFromDb = false;
 
-	public LoadUsersEvent(List<GitHubUser> arg0) {
-		list = arg0;
+	public LoadUsersEvent(List<GitHubUser> aList)
+	{
+		mList = aList;
 	}
 
-	public LoadUsersEvent() {
+	public LoadUsersEvent(List<GitHubUser> aList, boolean aIsFromDb)
+	{
+		mList = aList;
+		setIsFromDb(aIsFromDb);
+	}
+
+	public LoadUsersEvent()
+	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public List<GitHubUser> getUsers() {
-		return list;
+	public List<GitHubUser> getUsers()
+	{
+		return mList;
+	}
+
+	public boolean isFromDb()
+	{
+		return mIsFromDb;
+	}
+
+	public void setIsFromDb(boolean mIsFromDb)
+	{
+		this.mIsFromDb = mIsFromDb;
 	}
 
 }

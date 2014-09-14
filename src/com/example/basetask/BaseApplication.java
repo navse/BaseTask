@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.basetask.events.ApiErrorEvent;
 import com.example.basetask.service.DbService;
 import com.example.basetask.service.GitHubService;
+import com.example.basetask.util.AppConstants;
 import com.squareup.otto.Subscribe;
 
 public class BaseApplication extends com.activeandroid.app.Application
@@ -14,17 +16,14 @@ public class BaseApplication extends com.activeandroid.app.Application
 
 	private GitHubService mService;
 
-	BusProvider mBus;
-	// private Bus mBus = BusProvider.
-
-	public static final String API_URL = "https://api.github.com";
+	private BusProvider mBus;
 
 	@Override
 	public void onCreate()
 	{
 		super.onCreate();
 		mBus = BusProvider_.getInstance_(getBaseContext());
-		mService = new GitHubService(buildApi(), mBus);
+		mService = new GitHubService(buildApi(), mBus, getApplicationContext());
 		mBus.register(mService);
 
 		mBus.register(this); // listen for "global" events
@@ -34,8 +33,8 @@ public class BaseApplication extends com.activeandroid.app.Application
 
 	private GitHubApi buildApi()
 	{
-		return new RestAdapter.Builder().setEndpoint(API_URL).build()
-				.create(GitHubApi.class);
+		return new RestAdapter.Builder().setEndpoint(AppConstants.API_URL)
+				.build().create(GitHubApi.class);
 	}
 
 	@Override
@@ -51,7 +50,7 @@ public class BaseApplication extends com.activeandroid.app.Application
 		Toast.makeText(getApplicationContext(), event.getErrorMessage(),
 				Toast.LENGTH_SHORT).show();
 
-		Log.e("ReaderApp", event.getErrorMessage());
+		Log.e("BaseApplication", event.getErrorMessage());
 	}
 
 	// Method to start the service

@@ -11,7 +11,6 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.example.basetask.R;
-import com.example.basetask.UserList;
 import com.example.basetask.model.GitHubUser;
 import com.example.basetask.util.StringMatcher;
 

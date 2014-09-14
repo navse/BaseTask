@@ -1,59 +1,65 @@
-package com.example.basetask;
+package com.example.basetask.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.basetask.R;
 import com.example.basetask.model.GitHubUser;
 
-public class SectionedUsersListAdapter extends BaseAdapter {
+public class SectionedUsersListAdapter extends BaseAdapter
+{
 	private UserList currentList;
 
 	private Context context;
 	private LayoutInflater inflater;
 
-	public SectionedUsersListAdapter(Context context) {
+	public SectionedUsersListAdapter(Context context)
+	{
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 	}
 
-	public void setNewModel(UserList list) {
+	public void setNewModel(UserList list)
+	{
 		this.currentList = list;
 		notifyDataSetChanged();
 	}
 
 	@Override
-	public int getCount() {
-		if (currentList == null) {
+	public int getCount()
+	{
+		if (currentList == null)
+		{
 			return 0;
 		}
 		return currentList.getCount();
 	}
 
 	@Override
-	public Object getItem(int position) {
-		if (currentList.isSection(position)) {
+	public Object getItem(int position)
+	{
+		if (currentList.isSection(position))
+		{
 			return currentList.getSection(position);
 		}
 		return currentList.getItem(position);
 	}
 
 	@Override
-	public long getItemId(int position) {
+	public long getItemId(int position)
+	{
 		return 0;
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup viewGroup) {
-		if (view == null) {
+	public View getView(int position, View view, ViewGroup viewGroup)
+	{
+		if (view == null)
+		{
 			view = inflater.inflate(android.R.layout.simple_list_item_1,
 					viewGroup, false);
 			ViewHolder holder = new ViewHolder();
@@ -66,22 +72,27 @@ public class SectionedUsersListAdapter extends BaseAdapter {
 		return view;
 	}
 
-	private int getColorForPosition(int position) {
-		if (currentList.isSection(position)) {
+	private int getColorForPosition(int position)
+	{
+		if (currentList.isSection(position))
+		{
 			return context.getResources().getColor(R.color.section_header);
 		}
 		return context.getResources().getColor(android.R.color.black);
 	}
 
-	private CharSequence getTextForPosition(int position) {
-		if (currentList.isSection(position)) {
+	private CharSequence getTextForPosition(int position)
+	{
+		if (currentList.isSection(position))
+		{
 			return String.valueOf(currentList.getSection(position));
 		}
 		final GitHubUser person = currentList.getItem(position);
 		return person.getLogin();
 	}
 
-	private static class ViewHolder {
+	private static class ViewHolder
+	{
 		TextView text;
 	}
 }

@@ -1,4 +1,4 @@
-package com.example.basetask;
+package com.example.basetask.events;
 
 import retrofit.RetrofitError;
 

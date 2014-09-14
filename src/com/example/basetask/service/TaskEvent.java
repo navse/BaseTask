@@ -1,22 +1,45 @@
 package com.example.basetask.service;
 
-public class TaskEvent {
+import android.support.v4.app.LoaderManager;
 
-	private String evantName;
+public class TaskEvent
+{
+
+	private String mEventName;
+	private LoaderManager mLoaderManager;
 
 	public static String CLEAR_DB = "clear_db";
 	public static String RELOAD = "reload";
 
-	public TaskEvent(String evantName) {
-		this.evantName = evantName;
+	public TaskEvent(String aEventName)
+	{
+		this.mEventName = aEventName;
 	}
 
-	public String getEvantName() {
-		return evantName;
+	public TaskEvent(String aEventName, LoaderManager aLoaderManager)
+	{
+		this.mEventName = aEventName;
+		this.setmLoaderManager(aLoaderManager);
 	}
 
-	public void setEvantName(String evantName) {
-		this.evantName = evantName;
+	public String getEvantName()
+	{
+		return mEventName;
+	}
+
+	public void setEvantName(String evantName)
+	{
+		this.mEventName = evantName;
+	}
+
+	public LoaderManager getmLoaderManager()
+	{
+		return mLoaderManager;
+	}
+
+	public void setmLoaderManager(LoaderManager aLoaderManager)
+	{
+		this.mLoaderManager = aLoaderManager;
 	}
 
 }

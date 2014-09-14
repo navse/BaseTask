@@ -1,21 +1,20 @@
-package com.example.basetask;
+package com.example.basetask.adapters;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 
 import com.example.basetask.model.GitHubUser;
 import com.example.basetask.util.SortedList;
+import com.google.common.collect.Maps;
 
 public class UserList
 {
 	private SortedList<GitHubUser> users;
 	private SortedMap<Integer, Character> sections;
-	private Comparator comparator;
+	private Comparator<GitHubUser> comparator;
 
 	public UserList(List<GitHubUser> users)
 	{
