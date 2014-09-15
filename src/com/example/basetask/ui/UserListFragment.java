@@ -21,7 +21,11 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.activeandroid.content.ContentProvider;
+import com.example.basetask.BusProvider_;
+import com.example.basetask.events.TaskEvent;
+import com.example.basetask.model.EventEnum;
 import com.example.basetask.model.GitHubUser;
+import com.squareup.otto.Bus;
 
 public class UserListFragment extends ListFragment implements
 		OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>
@@ -29,6 +33,7 @@ public class UserListFragment extends ListFragment implements
 
 	Cursor mCursor;
 	UsersCursorAdapter mAdapter;
+	BusProvider_ mBus;
 
 	@Override
 	public void onActivityCreated(Bundle aSavedInstanceState)
@@ -69,7 +74,8 @@ public class UserListFragment extends ListFragment implements
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> aAdapter, View aView, int aPosition, long aId)
+	public void onItemClick(AdapterView<?> aAdapter, View aView, int aPosition,
+			long aId)
 	{
 		Object o = mAdapter.getItem(aPosition);
 		if (o instanceof Cursor)
@@ -80,6 +86,25 @@ public class UserListFragment extends ListFragment implements
 			i.setData(Uri.parse(url));
 			startActivity(i);
 		}
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		getBus().register(this);
+
+		getBus().post(new TaskEvent(EventEnum.INIT));
+	}
+
+	private Bus getBus()
+	{
+		if (mBus == null)
+		{
+			mBus = BusProvider_.getInstance_(getActivity());
+		}
+		return mBus;
 	}
 
 	public class UsersCursorAdapter extends SimpleCursorAdapter implements

@@ -6,15 +6,12 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 
-import com.activeandroid.loaders.ModelLoader;
 import com.activeandroid.query.Select;
-import com.example.basetask.GitHubApi;
 import com.example.basetask.events.ApiErrorEvent;
+import com.example.basetask.events.TaskEvent;
 import com.example.basetask.events.ToastEvent;
+import com.example.basetask.model.EventEnum;
 import com.example.basetask.model.GitHubUser;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -23,44 +20,24 @@ public class GitHubService
 {
 	private GitHubApi mApi;
 	private Bus mBus;
-	private Context mContext;
-	private DbUserLoader mLoader;
-
-	static boolean LOAD_FROM_DB = false;
-	static int PAGE_SIZE = 100;
-	static int LOADER_ID = 0;
 
 	public GitHubService(GitHubApi aApi, Bus aBus, Context aContext)
 	{
 		mApi = aApi;
 		mBus = aBus;
-		mContext = aContext;
 	}
 
 	@Subscribe
 	public void onLoadUsers(TaskEvent event)
 	{
-		if (!event.getEvantName().equals(TaskEvent.RELOAD))
-		{
-			return;
-		}
+		boolean hasData = (new Select().from(GitHubUser.class).count()) > 0;
 
-		if (GitHubService.LOAD_FROM_DB
-				&& new Select().from(GitHubUser.class).count() > 0)
-		{
-			loadFromDb(event.getmLoaderManager(), 0);
-		} else
+		if (event.getEvantType() == EventEnum.RELOAD
+				|| (event.getEvantType() == EventEnum.INIT && !hasData))
 		{
 			loadFromServer(1);
 		}
-	}
 
-	void loadFromDb(LoaderManager aLoaderManager, int aOffset)
-	{
-		mLoader = new DbUserLoader(aLoaderManager);
-		Bundle bundle = new Bundle();
-		bundle.putInt("offset", aOffset);
-		aLoaderManager.initLoader(LOADER_ID, bundle, mLoader);
 	}
 
 	void loadFromServer(final int id)
@@ -87,46 +64,5 @@ public class GitHubService
 				}
 			}
 		});
-	}
-
-	public class DbUserLoader implements
-			LoaderManager.LoaderCallbacks<List<GitHubUser>>
-	{
-		LoaderManager mLoaderManager;
-		int mOffset = 0;
-
-		public DbUserLoader(LoaderManager aLoaderManager)
-		{
-			mLoaderManager = aLoaderManager;
-		}
-
-		@Override
-		public Loader<List<GitHubUser>> onCreateLoader(int id, Bundle args)
-		{
-			mOffset = args.getInt("offset");
-			return new ModelLoader<GitHubUser>(mContext, GitHubUser.class,
-					new Select().from(GitHubUser.class)
-							.orderBy("login COLLATE NOCASE ASC")
-							.limit(PAGE_SIZE).offset(mOffset), true);
-		}
-
-		@Override
-		public void onLoadFinished(Loader<List<GitHubUser>> loader,
-				List<GitHubUser> data)
-		{
-			mBus.post(new LoadUsersEvent(data, true));
-
-			mLoaderManager.destroyLoader(LOADER_ID);
-			if (data.size() == 100)
-			{
-				loadFromDb(mLoaderManager, mOffset + PAGE_SIZE);
-			}
-		}
-
-		@Override
-		public void onLoaderReset(Loader<List<GitHubUser>> loader)
-		{
-
-		}
 	}
 }

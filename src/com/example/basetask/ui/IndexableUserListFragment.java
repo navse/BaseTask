@@ -23,9 +23,9 @@ import com.example.basetask.BusProvider_;
 import com.example.basetask.R;
 import com.example.basetask.adapters.SectionedListAdapter;
 import com.example.basetask.adapters.UserList;
+import com.example.basetask.events.TaskEvent;
 import com.example.basetask.model.GitHubUser;
 import com.example.basetask.service.LoadUsersEvent;
-import com.example.basetask.service.TaskEvent;
 import com.example.basetask.widget.IndexableListView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -118,7 +118,7 @@ public class IndexableUserListFragment extends ListFragment implements
 
 		getBus().register(this);
 
-		getBus().post(new TaskEvent(TaskEvent.RELOAD, getLoaderManager()));
+		// getBus().post(new TaskEvent(TaskEvent.RELOAD, getLoaderManager()));
 	}
 
 	private Bus getBus()

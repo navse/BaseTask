@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.example.basetask.events.ApiErrorEvent;
 import com.example.basetask.service.DbService;
+import com.example.basetask.service.GitHubApi;
 import com.example.basetask.service.GitHubService;
 import com.example.basetask.util.AppConstants;
 import com.squareup.otto.Subscribe;
