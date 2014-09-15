@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.basetask.events.ApiErrorEvent;
+import com.example.basetask.events.ToastEvent;
 import com.example.basetask.service.DbService;
 import com.example.basetask.service.GitHubApi;
 import com.example.basetask.service.GitHubService;
@@ -46,12 +47,21 @@ public class BaseApplication extends com.activeandroid.app.Application
 	}
 
 	@Subscribe
-	public void onApiError(ApiErrorEvent event)
+	public void onApiError(ApiErrorEvent aEvent)
 	{
-		Toast.makeText(getApplicationContext(), event.getErrorMessage(),
+		Toast.makeText(getApplicationContext(), aEvent.getErrorMessage(),
 				Toast.LENGTH_SHORT).show();
 
-		Log.e("BaseApplication", event.getErrorMessage());
+		Log.e("BaseApplication", aEvent.getErrorMessage());
+	}
+
+	@Subscribe
+	public void onToast(ToastEvent aEvent)
+	{
+		Toast.makeText(getApplicationContext(), aEvent.getMessage(),
+				Toast.LENGTH_SHORT).show();
+
+		Log.e("BaseApplication", aEvent.getMessage());
 	}
 
 	// Method to start the service

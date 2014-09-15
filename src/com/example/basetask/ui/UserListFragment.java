@@ -80,6 +80,7 @@ public class UserListFragment extends ListFragment implements
 		Object o = mAdapter.getItem(aPosition);
 		if (o instanceof Cursor)
 		{
+			@SuppressWarnings("resource")
 			Cursor c = (Cursor) o;
 			String url = c.getString(c.getColumnIndex("html_url"));
 			Intent i = new Intent(Intent.ACTION_VIEW);
@@ -113,6 +114,7 @@ public class UserListFragment extends ListFragment implements
 
 		AlphabetIndexer mAlphabetIndexer;
 
+		@SuppressWarnings("deprecation")
 		public UsersCursorAdapter(Context aContext, int aLayout,
 				Cursor aCursor, String[] aStrings, int[] aIs)
 		{

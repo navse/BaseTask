@@ -1,4 +1,4 @@
-package com.example.basetask.service;
+package com.example.basetask.events;
 
 import java.util.List;
 

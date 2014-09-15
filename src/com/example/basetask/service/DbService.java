@@ -7,6 +7,7 @@ import android.os.IBinder;
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.query.Delete;
 import com.example.basetask.BusProvider_;
+import com.example.basetask.events.LoadUsersEvent;
 import com.example.basetask.events.TaskEvent;
 import com.example.basetask.model.EventEnum;
 import com.example.basetask.model.GitHubUser;
