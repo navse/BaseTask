@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,12 +25,12 @@
 
         <provider
             android:name="com.activeandroid.content.ContentProvider"
-            android:authorities="com.example"
+            android:authorities="com.example.basetask"
             android:exported="false" />
 
         <service
             android:name=".service.DbService"
-            android:exported="false"/>
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity_"

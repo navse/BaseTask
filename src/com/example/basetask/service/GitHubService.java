@@ -26,7 +26,7 @@ public class GitHubService
 	private Context mContext;
 	private DbUserLoader mLoader;
 
-	static boolean LOAD_FROM_DB = true;
+	static boolean LOAD_FROM_DB = false;
 	static int PAGE_SIZE = 100;
 	static int LOADER_ID = 0;
 

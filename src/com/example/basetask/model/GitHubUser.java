@@ -4,7 +4,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
-@Table(name = "Users")
+@Table(name = "Users", id = android.provider.BaseColumns._ID)
 public class GitHubUser extends Model implements Sectionable<Character>
 {
 
